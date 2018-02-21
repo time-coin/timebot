@@ -5,7 +5,7 @@ const token = process.env.DISCORD_API_KEY;
 const path = require("path");
 
 var Rollbar = require("rollbar");
-var rollbar = new Rollbar({process.env.ROLLBAR_ACCESS_TOKEN, captureUncaught: true, captureUnhandledRejections: true});
+var rollbar = new Rollbar({accessToken: process.env.ROLLBAR_ACCESS_TOKEN, captureUncaught: true, captureUnhandledRejections: true});
 
 rollbar.log("Bot started");
 
