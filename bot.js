@@ -6,6 +6,7 @@ const path = require("path");
 
 var Rollbar = require("rollbar");
 var rollbar = new Rollbar(process.env.ROLLBAR_ACCESS_TOKEN);
+rollbar.log("Bot started");
 
 client.registry
   // Registers your custom command groups
