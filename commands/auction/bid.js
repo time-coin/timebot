@@ -29,28 +29,17 @@ const getAuction = async function(msg) {
 };
 
 const parseAmount = function(value) {
-  return parseFloat(value.replace(/,/g, ".").replace(/[^0-9\.]/g, "")).toFixed(
-    3
-  );
+  return parseFloat(value.replace(/,/g, ".").replace(/[^0-9\.]/g, ""));
 };
 
 const validate = async function(value, msg, args) {
   const auction = await getAuction(msg);
-	console.log('VALIDATE AUCTION VARIABLE');
-	console.log(auction);
-  const minimum = (parseFloat(auction.amount) + 0.001).toFixed(3);
-  console.log("ARGS");
-  console.log(args);
-  console.log("VALIDATING");
-  console.log(value);
-  console.log("VALIDATING PARSED");
-  console.log(parseAmount(value));
-  console.log("MINIMUM");
-  console.log(minimum);
-  if (parseAmount(value) && parseAmount(value) >= minimum) {
+  const minimum = (parseFloat(auction.amount) + 0.001);
+  const new_bid = parseAmount(value);
+  if (parseFloat(new_bid) >= parseFloat(minimum)) {
     return true;
   } else {
-    return `Please enter an amount of ${minimum} BTC or more`;
+    return `Please enter an amount of ${minimum.toFixed(3)} BTC or more`;
   }
 };
 
@@ -80,23 +69,19 @@ module.exports = class BidCommand extends Commando.Command {
   async run(msg, args) {
     let amount = parseAmount(args.amount);
     let auction = await getAuction(msg);
-    console.log("OLD");
-    console.log(auction);
     auction = {
-      'amount': amount,
+      amount: amount,
       bids: [
         ...auction.bids,
         {
           user: `${msg.message.member.user.username}#${
             msg.message.member.user.discriminator
           }`,
-          'amount': amount
+          amount: amount
         }
       ]
     };
-    console.log("NEW");
-    console.log(auction);
     redis_client.set(getRedisKey(msg), JSON.stringify(auction));
-    return msg.reply(`Current bid: **${amount} BTC**`);
+    return msg.reply("Current bid: **" + amount.toFixed(3) + " BTC**");
   }
 };
