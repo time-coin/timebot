@@ -4,6 +4,9 @@ const client = new Commando.Client({ owner: process.env.DISCORD_BOT_OWNER });
 const token = process.env.DISCORD_API_KEY;
 const path = require("path");
 
+var Rollbar = require("rollbar");
+var rollbar = new Rollbar(process.env.ROLLBAR_ACCESS_TOKEN);
+
 client.registry
   // Registers your custom command groups
   .registerGroups([["math", "base", "Auction"]])
