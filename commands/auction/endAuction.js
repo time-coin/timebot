@@ -1,16 +1,6 @@
 const Commando = require("discord.js-commando");
 
-const redis_client = require("redis").createClient({
-  host: process.env.REDIS_URL
-});
-
-const getRedisKey = function(msg) {
-  return `${msg.message.channel.id}auction`;
-};
-
-const getRedisKeyActive = function(msg) {
-  return `${msg.message.channel.id}auctionactive`;
-};
+const redis = require("../../includes/redis.js");
 
 module.exports = class cancelAuction extends Commando.Command {
   constructor(client) {
@@ -25,8 +15,8 @@ module.exports = class cancelAuction extends Commando.Command {
   }
 
   async run(msg, args) {
-    redis_client.del(getRedisKey(msg));
-    redis_client.set(getRedisKeyActive(msg), false);
+    redis.delete(redis.getKeyFromMsg(msg, "auction"));
+    redis.set(redis.getKeyFromMsg(msg, "active"), false);
     return msg.reply(`Auction ended.`);
   }
 };

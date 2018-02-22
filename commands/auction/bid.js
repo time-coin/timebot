@@ -1,61 +1,14 @@
 const Commando = require("discord.js-commando");
 
-const redis_client = require("redis").createClient({
-  host: process.env.REDIS_URL
-});
-
-const getRedisKey = function(msg) {
-  return `${msg.message.channel.id}auction`;
-};
-
-const getRedisKeyActive = function(msg) {
-  return `${msg.message.channel.id}auctionactive`;
-};
-
-const isAuctionActive = async function(msg) {
-  let active = new Promise((resolve, reject) => {
-    redis_client.get(getRedisKeyActive(msg), (error, result) => {
-      if (error) {
-        reject(error);
-      }
-			console.log(result);
-      if (result === null || result === "false" || result === false) {
-        resolve(false);
-      }
-
-      resolve(true);
-    });
-  });
-  return active.catch(function(error) {
-    console.log(error);
-  });
-};
-
-const getAuction = async function(msg) {
-  let auction = new Promise((resolve, reject) => {
-    redis_client.get(getRedisKey(msg), (error, result) => {
-      if (error) {
-        reject(error);
-      }
-      if (result === null) {
-        resolve({ amount: 1, bids: [] });
-      }
-
-      resolve(JSON.parse(result));
-    });
-  });
-  return auction.catch(function(error) {
-    console.log(error);
-  });
-};
+const auction = require("../../includes/auction.js");
 
 const parseAmount = function(value) {
   return parseFloat(value.replace(/,/g, ".").replace(/[^0-9\.]/g, ""));
 };
 
-const validate = async function(value, msg, args) {
-  const auction = await getAuction(msg);
-  const minimum = parseFloat(auction.amount) + 0.001;
+const validate = async (value, msg, args) => {
+  const state = await auction.getState(msg);
+  const minimum = parseFloat(state.amount) + 0.001;
   const new_bid = parseAmount(value);
   if (parseFloat(new_bid) >= parseFloat(minimum)) {
     return true;
@@ -88,16 +41,16 @@ module.exports = class bid extends Commando.Command {
   }
 
   async run(msg, args) {
-    const isActive = await isAuctionActive(msg);
+    const isActive = await auction.isAuctionActive(msg);
     if (!isActive) {
-			return msg.reply("There is currently no active auction.");
+      return msg.reply("There is currently no active auction.");
     } else {
       let amount = parseAmount(args.amount);
-      let auction = await getAuction(msg);
-      auction = {
+      let state = await auction.getState(msg);
+      state = {
         amount: amount,
         bids: [
-          ...auction.bids,
+          ...state.bids,
           {
             user: `${msg.message.member.user.username}#${
               msg.message.member.user.discriminator
@@ -106,7 +59,7 @@ module.exports = class bid extends Commando.Command {
           }
         ]
       };
-      redis_client.set(getRedisKey(msg), JSON.stringify(auction));
+      await auction.setState(msg, state);
       return msg.reply("Current bid: **" + amount.toFixed(3) + " BTC**");
     }
   }
