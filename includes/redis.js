@@ -29,7 +29,6 @@ const getObject = async (key, defaultValue) => {
     defaultValue = JSON.stringify(defaultValue);
   }
   const result = await self.get(key, defaultValue);
-  console.log(result);
   return JSON.parse(result);
 };
 
