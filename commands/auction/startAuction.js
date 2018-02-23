@@ -2,6 +2,8 @@ const Commando = require("discord.js-commando");
 
 const redis = require("../../includes/redis.js");
 
+const auction = require("../../includes/auction.js");
+
 module.exports = class startAuction extends Commando.Command {
   constructor(client) {
     super(client, {
@@ -14,8 +16,13 @@ module.exports = class startAuction extends Commando.Command {
     });
   }
 
+  hasPermission(msg) {
+    return auction.hasPermissionAdmin(msg);
+  }
+
   async run(msg, args) {
-    redis.set(redis.getKeyFromMsg(msg, 'active'), true);
+    redis.set(redis.getKeyFromMsg(msg, "active"), true);
     return msg.reply(`Auction started. Bids can be placed using !bid <amount>`);
   }
+
 };

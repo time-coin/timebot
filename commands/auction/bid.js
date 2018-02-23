@@ -63,4 +63,8 @@ module.exports = class bid extends Commando.Command {
       return msg.reply("Current bid: **" + amount.toFixed(3) + " BTC**");
     }
   }
+
+  hasPermission(msg) {
+    return auction.hasPermissionBid(msg) || auction.hasPermissionAdmin(msg);
+  }
 };

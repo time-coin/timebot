@@ -16,5 +16,20 @@ module.exports = {
   },
   setState: async (msg, state) => {
     return await redis.setObject(redis.getKeyFromMsg(msg, "auction"), state);
+  },
+  hasPermissionAdmin: msg => {
+    return (
+      msg.message.member._roles.indexOf(
+        msg.message.guild.roles.find("name", "Auctioneer").id
+      ) !== -1
+    );
+  }
+  },
+  hasPermissionBid: msg => {
+    return (
+      msg.message.member._roles.indexOf(
+        msg.message.guild.roles.find("name", "Auction").id
+      ) !== -1
+    );
   }
 };
