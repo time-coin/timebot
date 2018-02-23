@@ -23,7 +23,6 @@ module.exports = {
         msg.message.guild.roles.find("name", "Auctioneer").id
       ) !== -1
     );
-  }
   },
   hasPermissionBid: msg => {
     return (
@@ -31,5 +30,9 @@ module.exports = {
         msg.message.guild.roles.find("name", "Auction").id
       ) !== -1
     );
+  },
+  isAuctionChannel: msg => {
+    console.log(msg.message.channel.name);
+    return msg.message.channel.name === "auction-bids";
   }
 };

@@ -21,8 +21,10 @@ module.exports = class startAuction extends Commando.Command {
   }
 
   async run(msg, args) {
+    if (!auction.isAuctionChannel(msg)) {
+      return false;
+    }
     redis.set(redis.getKeyFromMsg(msg, "active"), true);
     return msg.reply(`Auction started. Bids can be placed using !bid <amount>`);
   }
-
 };

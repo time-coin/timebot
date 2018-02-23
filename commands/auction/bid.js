@@ -7,6 +7,9 @@ const parseAmount = function(value) {
 };
 
 const validate = async (value, msg, args) => {
+	if (!auction.isAuctionChannel(msg)) {
+		return true; // Have to pass this validation currently until the validation refactor
+	}
   const state = await auction.getState(msg);
   const minimum = parseFloat(state.amount) + 0.001;
   const new_bid = parseAmount(value);
@@ -41,6 +44,11 @@ module.exports = class bid extends Commando.Command {
   }
 
   async run(msg, args) {
+		console.log('HERE');
+		if (!auction.isAuctionChannel(msg)) {
+			msg.message.author.sendMessage('Please contain all bids to the #auction-bids channel')
+      return msg.message.delete();
+    }
     const isActive = await auction.isAuctionActive(msg);
     if (!isActive) {
       return msg.reply("There is currently no active auction.");

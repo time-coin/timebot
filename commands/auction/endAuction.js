@@ -8,7 +8,7 @@ module.exports = class cancelAuction extends Commando.Command {
   constructor(client) {
     super(client, {
       name: "endauction",
-      aliases: ['stopauction', 'cancelauction'],
+      aliases: ["stopauction", "cancelauction"],
       group: "auction",
       memberName: "endauction",
       description: "This cancels the current auction.",
@@ -21,9 +21,11 @@ module.exports = class cancelAuction extends Commando.Command {
   }
 
   async run(msg, args) {
+    if (!auction.isAuctionChannel(msg)) {
+      return false;
+    }
     redis.delete(redis.getKeyFromMsg(msg, "auction"));
     redis.set(redis.getKeyFromMsg(msg, "active"), false);
     return msg.reply(`Auction ended.`);
   }
-
 };
