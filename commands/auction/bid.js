@@ -6,20 +6,6 @@ const parseAmount = function(value) {
   return parseFloat(value.replace(/,/g, ".").replace(/[^0-9\.]/g, ""));
 };
 
-const validate = async (value, msg, args) => {
-	if (!auction.isAuctionChannel(msg)) {
-		return true; // Have to pass this validation currently until the validation refactor
-	}
-  const state = await auction.getState(msg);
-  const minimum = parseFloat(state.amount) + 0.001;
-  const new_bid = parseAmount(value);
-  if (parseFloat(new_bid) >= parseFloat(minimum)) {
-    return true;
-  } else {
-    return `Please enter an amount of ${minimum.toFixed(3)} BTC or more`;
-  }
-};
-
 module.exports = class bid extends Commando.Command {
   constructor(client) {
     super(client, {
@@ -36,39 +22,50 @@ module.exports = class bid extends Commando.Command {
           label: "amount",
           prompt: "Please enter your bid in BTC. for example: !bid 1.1 BTC",
           type: "string",
-          infinite: false,
-          validate: validate
+          infinite: false
         }
       ]
     });
   }
 
   async run(msg, args) {
-		console.log('HERE');
-		if (!auction.isAuctionChannel(msg)) {
-			msg.message.author.sendMessage('Please contain all bids to the #auction-bids channel')
-      return msg.message.delete();
+    let state = await auction.getState(msg);
+    const minimum = parseFloat(state.amount) + 0.001;
+    const new_bid = parseAmount(args.amount);
+    let error = false;
+    let error_message = "";
+    if (!(parseFloat(new_bid) >= parseFloat(minimum))) {
+      msg.reply(`Please enter an amount of ${minimum.toFixed(3)} BTC or more`);
+      error = true;
+    }
+    if (!auction.isAuctionChannel(msg)) {
+      error_message = "Please contain all bids to the #auction-bids channel";
+      error = true;
     }
     const isActive = await auction.isAuctionActive(msg);
     if (!isActive) {
-      return msg.reply("There is currently no active auction.");
+      msg.reply("There is currently no active auction.");
+    }
+    if (error) {
+      if (error_message !== "") {
+        msg.message.author.sendMessage(error_message);
+        msg.message.delete();
+      }
     } else {
-      let amount = parseAmount(args.amount);
-      let state = await auction.getState(msg);
       state = {
-        amount: amount,
+        amount: new_bid,
         bids: [
           ...state.bids,
           {
             user: `${msg.message.member.user.username}#${
               msg.message.member.user.discriminator
             }`,
-            amount: amount
+            amount: new_bid
           }
         ]
       };
       await auction.setState(msg, state);
-      return msg.reply("Current bid: **" + amount.toFixed(3) + " BTC**");
+      return msg.reply("Current bid: **" + new_bid.toFixed(3) + " BTC**");
     }
   }
 
