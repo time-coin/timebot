@@ -28,7 +28,7 @@ module.exports = class deleteAuction extends Commando.Command {
     }
     redis.set(redis.getKeyFromMsg(msg, "active"), true);
     let state = await auction.getState(msg);
-    if (state.bids.length < 2) {
+    if (state.bids.length > 2) {
       let old_high_bid = state.bids.pop();
       let new_last_bid = state.bids.pop();
       state.bids = [...state.bids, new_last_bid];
@@ -43,7 +43,7 @@ module.exports = class deleteAuction extends Commando.Command {
       );
     } else {
       auction.setState(msg, auction.defaultState);
-      msg.reply("The kast bid has been removed.");
+      msg.reply("The last bid has been removed.");
     }
   }
 };
