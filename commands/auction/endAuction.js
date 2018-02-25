@@ -43,7 +43,7 @@ module.exports = class cancelAuction extends Commando.Command {
             winner.user +
             "** at **" +
             winner.amount.toFixed(3) +
-            " BTC**"
+            " BTC**. Please remember that the TIME team will NOT private message you to collect your BTC. Please make sure you are talking to the right person before sending BTC"
         );
       }
     }
