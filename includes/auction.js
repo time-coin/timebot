@@ -30,7 +30,6 @@ const hasPermissionBid = msg => {
   );
 };
 const isAuctionChannel = msg => {
-  console.log(msg.message.channel.name);
   return msg.message.channel.name === "auction-bids";
 };
 
