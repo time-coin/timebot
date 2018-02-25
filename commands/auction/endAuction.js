@@ -30,7 +30,7 @@ module.exports = class cancelAuction extends Commando.Command {
     } else {
       try {
         let state = await auction.getState(msg);
-      } catch {
+      } catch (error) {
         let state = auction.defaultState;
       }
       auction.setState(msg, auction.defaultState);
