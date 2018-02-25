@@ -1,6 +1,6 @@
 const redis = require("./redis.js");
 
-const defaultState= {amount: 0.03, bids: []};
+const defaultState= {amount: 0.3, bids: []};
 
 const isAuctionActive = async msg => {
   let result = await redis.get(redis.getKeyFromMsg(msg, "active"));
