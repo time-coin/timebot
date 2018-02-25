@@ -1,6 +1,6 @@
 const client = require("redis");
 const redis_client = client.createClient({
-  host: process.env.REDIS_URL
+  url: process.env.REDIS_URL
 });
 
 const get = async (key, defaultValue) => {
