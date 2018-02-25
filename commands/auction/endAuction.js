@@ -28,11 +28,10 @@ module.exports = class cancelAuction extends Commando.Command {
     if (!isActive) {
       msg.reply("There is currently no active auction.");
     } else {
+      let state = auction.defaultState;
       try {
-        let state = await auction.getState(msg);
-      } catch (error) {
-        let state = auction.defaultState;
-      }
+        state = await auction.getState(msg);
+      } catch (error) {}
       auction.setState(msg, auction.defaultState);
       redis.set(redis.getKeyFromMsg(msg, "active"), false);
       if (!state.bids.length) {
