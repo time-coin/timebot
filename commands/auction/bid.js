@@ -45,7 +45,7 @@ module.exports = class bid extends Commando.Command {
     const isActive = await auction.isAuctionActive(msg);
     if (!isActive) {
       msg.reply("There is currently no active auction.");
-      return true;
+      resolve(true);
     }
     if (error) {
       if (error_message !== "") {
