@@ -1,6 +1,6 @@
 const redis = require("./redis.js");
 
-const defaultState= {amount: 0.3, bids: []};
+const defaultState = { amount: 0.3, bids: [] };
 
 const isAuctionActive = async msg => {
   let result = await redis.get(redis.getKeyFromMsg(msg, "active"));
@@ -9,13 +9,19 @@ const isAuctionActive = async msg => {
   }
   return true;
 };
-const getState =  async msg => {
-  return await redis.getObject(redis.getKeyFromMsg(msg, "auction"), this.defaultState);
+const getState = async msg => {
+  return await redis.getObject(
+    redis.getKeyFromMsg(msg, "auction"),
+    this.defaultState
+  );
 };
 const setState = async (msg, state) => {
   return await redis.setObject(redis.getKeyFromMsg(msg, "auction"), state);
 };
 const hasPermissionAdmin = msg => {
+  if (typeof msg.message.member._roles === "undefined") {
+    return false;
+  }
   return (
     msg.message.member._roles.indexOf(
       msg.message.guild.roles.find("name", "Auctioneer").id
@@ -23,6 +29,9 @@ const hasPermissionAdmin = msg => {
   );
 };
 const hasPermissionBid = msg => {
+  if (typeof msg.message.member._roles === "undefined") {
+    return false;
+  }
   return (
     msg.message.member._roles.indexOf(
       msg.message.guild.roles.find("name", "Auction").id
