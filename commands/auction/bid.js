@@ -30,7 +30,7 @@ module.exports = class bid extends Commando.Command {
 
   async run(msg, args) {
     let state = await auction.getState(msg);
-    const minimum = parseFloat(state.amount) + 0.001;
+    const minimum = parseFloat(state.amount) + 0.01;
     const new_bid = parseAmount(args.amount);
     let error = false;
     let error_message = "";
@@ -40,14 +40,14 @@ module.exports = class bid extends Commando.Command {
       error = true;
     }
     if (!error && !(parseFloat(new_bid) >= parseFloat(minimum))) {
-      msg.reply(`Please enter an amount of ${minimum.toFixed(3)} BTC or more`);
+      msg.reply(`Please enter an amount of ${minimum.toFixed(2)} BTC or more`);
       error = true;
     }
     if (!error && !auction.isAuctionChannel(msg)) {
       error_message = "Please contain all bids to the #auction-bids channel";
       error = true;
     }
-   
+
     if (error) {
       if (error_message !== "") {
         msg.message.author.sendMessage(error_message);
@@ -67,7 +67,7 @@ module.exports = class bid extends Commando.Command {
         ]
       };
       await auction.setState(msg, state);
-      return msg.reply("Current bid: **" + new_bid.toFixed(3) + " BTC**");
+      return msg.reply("Current bid: **" + new_bid.toFixed(2) + " BTC**");
     }
   }
 

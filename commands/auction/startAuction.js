@@ -27,8 +27,8 @@ module.exports = class startAuction extends Commando.Command {
     redis.set(redis.getKeyFromMsg(msg, "active"), true);
     return msg.reply(
       "Auction started. Bids can be placed using !bid <amount>. The starting bid is **" +
-        auction.defaultState.amount.toFixed(3) +
-        " BTC**. Please enter at least 0.001 more to bid."
+        auction.defaultState.amount.toFixed(2) +
+        " BTC**. Please enter at least 0.01 more to bid."
     );
   }
 };

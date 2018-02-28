@@ -37,7 +37,7 @@ module.exports = class deleteAuction extends Commando.Command {
       auction.setState(msg, state);
       return msg.reply(
         "The last high bid has been removed. The new high bid is ** " +
-          new_last_bid.amount.toFixed(3) +
+          new_last_bid.amount.toFixed(2) +
           " BTC**  by **" +
           new_last_bid.user +
           "**"
